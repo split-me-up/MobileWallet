@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Text, View, StyleSheet, AsyncStorage } from "react-native";
 import { _retrieveData } from "../helpers";
 import firebase from "react-native-firebase";
-
+import socketClientIP from "../socket";
 const styles = StyleSheet.create({
   button: {
     width: 100,
@@ -31,8 +31,39 @@ const styles = StyleSheet.create({
 });
 
 class HomeScreen extends React.Component {
+  onTokenRefreshListener = username => {
+    console.log("inside onTokenRefreshListener");
+    firebase.messaging().onTokenRefresh(fcmToken => {
+      //send username and fcmtoken from here
+      console.log("inside onTokenRefresh");
+      fetch(socketClientIP + "/updateToken", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: username,
+          fcmToken: fcmToken
+        })
+      }).then(response => {
+        console.log(response);
+      });
+    });
+  };
   componentDidMount() {
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
+    _retrieveData("username")
+      .then(username => {
+        console.log("inside _retrieveData before onTokenRefreshListener");
+        if (username) {
+          this.onTokenRefreshListener(username);
+        }
+      })
+      .catch(err => {
+        console.log("no username found");
+      });
+
     // console.log(firebase);
     firebase
       .messaging()
