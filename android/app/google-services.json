@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "728703677207",
+    "firebase_url": "https://splitmeup2.firebaseio.com",
+    "project_id": "splitmeup2",
+    "storage_bucket": "splitmeup2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728703677207:android:47f4c1c24cc1b364",
+        "android_client_info": {
+          "package_name": "com.splitmeup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728703677207-7cp973lu5qhjj507tik0tfn4tiju5s6m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAezXjr8pKEZg_5FVOblP89SCjXo0TyHTQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

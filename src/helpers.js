@@ -1,5 +1,6 @@
 import { AsyncStorage } from "react-native";
 const cryptico = require("cryptico");
+
 _storeData = (key, value) => {
   if (typeof value == "object") {
     console.log("type is object");

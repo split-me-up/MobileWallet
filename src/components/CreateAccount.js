@@ -10,7 +10,7 @@ import {
   TextInput,
   AsyncStorage
 } from "react-native";
-import { registerWithUsername } from "../socket";
+import { registerWithUsername, socketClientIP } from "../socket";
 class CreateAccount extends React.Component {
   state = {
     placeholder: "Enter a username to get started",
@@ -33,7 +33,7 @@ class CreateAccount extends React.Component {
       },
       () => {
         var input_username = this.state.username;
-        this.socket = SocketIOClient("http://splitmeup-v2.herokuapp.com/");
+        this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
         registerWithUsername(input_username)
           .then(msg => {

@@ -5,6 +5,7 @@ import {
   encryptShardToSendIt
 } from "./helpers";
 // const socket = io();
+export const socketClientIP = "http://192.168.0.103:2000";
 const cryptico = require("cryptico");
 export function registerWithUsername(username) {
   return new Promise((resolve, reject) => {

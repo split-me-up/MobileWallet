@@ -9,7 +9,7 @@ import {
   AsyncStorage
 } from "react-native";
 import SocketIOClient from "socket.io-client";
-import { registerWithUsername } from "../socket";
+import { registerWithUsername, socketClientIP } from "../socket";
 import { KeyIsValid } from "../web3Functions";
 import { verifyInputKey, _storeData, _retrieveData } from "../helpers";
 class ImportAccount extends React.Component {
@@ -43,7 +43,7 @@ class ImportAccount extends React.Component {
       .then(input_pvt_key => {
         this.setState({ private_key: input_pvt_key });
         console.log("key is valid fomat");
-        this.socket = SocketIOClient("http://192.168.0.103:2000");
+        this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
         registerWithUsername(this.state.username)
           .then(msg => {

@@ -1,6 +1,8 @@
 import React from "react";
 import { Button, Text, View, StyleSheet, AsyncStorage } from "react-native";
 import { _retrieveData } from "../helpers";
+import firebase from "react-native-firebase";
+
 const styles = StyleSheet.create({
   button: {
     width: 100,
@@ -31,6 +33,25 @@ const styles = StyleSheet.create({
 class HomeScreen extends React.Component {
   componentDidMount() {
     // AsyncStorage.clear();
+    console.log(firebase);
+    firebase
+      .messaging()
+      .hasPermission()
+      .then(enabled => {
+        if (enabled) {
+          console.log("user has permission");
+        } else {
+          firebase
+            .messaging()
+            .requestPermission()
+            .then(() => {
+              console.log("user has authorised");
+            })
+            .catch(error => {
+              console.log("User has rejected permissions");
+            });
+        }
+      });
   }
   choose_navigation_path = () => {
     console.log("inside choose_navigation_path");
