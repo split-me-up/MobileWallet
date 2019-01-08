@@ -12,6 +12,7 @@ import {
 import { fillBalance } from "../web3Functions";
 import SocketIOClient from "socket.io-client";
 import { loginWithUsername, socketClientIP } from "../socket";
+import { decryptObject } from "../helpers";
 class Wallet extends React.Component {
   state = {
     dai_balance: 0
@@ -23,6 +24,15 @@ class Wallet extends React.Component {
     //     console.log("expo push token: ", token);
     //   });
     // });
+    fetch(socketClientIP + "/latestMessages").then(res => {
+      res.forEach(message => {
+        _retrieveData("key").then(key => {
+          decrypted_object = decryptObject(message, key);
+          console.log(decrypted_object);
+          _storeData(decrypted_object.identity, decrypted_object.shard);
+        });
+      });
+    });
     this.socket = SocketIOClient(socketClientIP);
     socket = this.socket;
     AsyncStorage.getItem("username")
