@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 class HomeScreen extends React.Component {
   componentDidMount() {
     // AsyncStorage.clear();
-    console.log(firebase);
+    // console.log(firebase);
     firebase
       .messaging()
       .hasPermission()
