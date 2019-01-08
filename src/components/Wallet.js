@@ -15,7 +15,8 @@ import { loginWithUsername, socketClientIP } from "../socket";
 import { decryptObject } from "../helpers";
 class Wallet extends React.Component {
   state = {
-    dai_balance: 0
+    dai_balance: 0,
+    username: ""
   };
   componentDidMount() {
     // Permissions.getAsync(Permissions.NOTIFICATIONS).then(status => {
@@ -24,15 +25,32 @@ class Wallet extends React.Component {
     //     console.log("expo push token: ", token);
     //   });
     // });
-    fetch(socketClientIP + "/latestMessages").then(res => {
-      res.forEach(message => {
-        _retrieveData("key").then(key => {
-          decrypted_object = decryptObject(message, key);
-          console.log(decrypted_object);
-          _storeData(decrypted_object.identity, decrypted_object.shard);
+    _retrieveData("username").then(username => {
+      this.setState({ username: username });
+      fetch(socketClientIP + "/latestMessages", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username: this.state.username })
+      }).then(res => {
+        res.json().then(response => {
+          console.log("inside pormise", response);
+          response.forEach(message => {
+            _retrieveData("key").then(key => {
+              console.log("key:", key);
+              console.log("message:", message);
+              decrypted_object = decryptObject(message, key);
+              console.log("decrypted_object:", decrypted_object);
+              _storeData(decrypted_object.identity, decrypted_object.shard);
+            });
+          });
         });
+        // res = await res.json();
       });
     });
+
     this.socket = SocketIOClient(socketClientIP);
     socket = this.socket;
     AsyncStorage.getItem("username")

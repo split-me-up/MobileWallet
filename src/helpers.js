@@ -53,8 +53,12 @@ _retrieveData = async key => {
   }
 };
 function decryptObject(encrypted, privateKey) {
+  console.log("encrypted:", encrypted);
+  console.log("privateKey:", privateKey);
+  privateKey = cryptico.RSAKey.parse(privateKey);
   let result = cryptico.decrypt(encrypted, privateKey);
-  console.log(result);
+  console.log("result:", result);
+
   return JSON.parse(result.plaintext);
 }
 function encryptShardToSendIt(shard, publicKey) {
