@@ -1,6 +1,6 @@
 import { AsyncStorage } from "react-native";
 const cryptico = require("cryptico");
-
+import firebase from "react-native-firebase";
 _storeData = (key, value) => {
   if (typeof value == "object") {
     console.log("type is object");
@@ -66,11 +66,27 @@ function encryptShardToSendIt(shard, publicKey) {
   console.log(encrypted);
   return encrypted.cipher;
 }
+getNotificationToken = () => {
+  return new Promise(function(resolve, reject) {
+    console.log("inside getNotificationToken promise");
+    firebase
+      .messaging()
+      .getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          resolve(fcmToken);
+        } else {
+          reject("some error occured while getting token");
+        }
+      });
+  });
+};
 
 export {
   _storeData,
   _retrieveData,
   decryptObject,
   encryptShardToSendIt,
-  verifyInputKey
+  verifyInputKey,
+  getNotificationToken
 };

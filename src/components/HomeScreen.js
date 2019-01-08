@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 
 class HomeScreen extends React.Component {
   componentDidMount() {
-    // AsyncStorage.clear();
+    AsyncStorage.clear();
     // console.log(firebase);
     firebase
       .messaging()
@@ -56,6 +56,7 @@ class HomeScreen extends React.Component {
   choose_navigation_path = () => {
     console.log("inside choose_navigation_path");
     _retrieveData("key").then(pvt_key => {
+      console.log("inside retrieve key");
       _retrieveData("username").then(username => {
         if (pvt_key) {
           this.props.navigation.navigate("Wallet", {

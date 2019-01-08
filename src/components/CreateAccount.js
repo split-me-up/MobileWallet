@@ -11,6 +11,7 @@ import {
   AsyncStorage
 } from "react-native";
 import { registerWithUsername, socketClientIP } from "../socket";
+import { getNotificationToken } from "../helpers";
 class CreateAccount extends React.Component {
   state = {
     placeholder: "Enter a username to get started",
@@ -35,28 +36,30 @@ class CreateAccount extends React.Component {
         var input_username = this.state.username;
         this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
-        registerWithUsername(input_username)
-          .then(msg => {
-            console.log(msg);
-            AsyncStorage.setItem("username", input_username);
-            this.props.navigation.navigate("Wallet", {
-              username: input_username,
-              pvt_key: null
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            console.log("Inside catch of registerWithUsername");
+        getNotificationToken().then(fcmToken => {
+          registerWithUsername(input_username, fcmToken)
+            .then(msg => {
+              console.log(msg);
+              AsyncStorage.setItem("username", input_username);
+              this.props.navigation.navigate("Wallet", {
+                username: input_username,
+                pvt_key: null
+              });
+            })
+            .catch(err => {
+              console.log(err);
+              console.log("Inside catch of registerWithUsername");
 
-            Alert.alert("Username taked", err, [
-              {
-                text: "choose a different username",
-                onPress: () => {
-                  this.clearUsername();
+              Alert.alert("Username taked", err, [
+                {
+                  text: "choose a different username",
+                  onPress: () => {
+                    this.clearUsername();
+                  }
                 }
-              }
-            ]);
-          });
+              ]);
+            });
+        });
       }
     );
   };

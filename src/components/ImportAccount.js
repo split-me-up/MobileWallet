@@ -11,7 +11,12 @@ import {
 import SocketIOClient from "socket.io-client";
 import { registerWithUsername, socketClientIP } from "../socket";
 import { KeyIsValid } from "../web3Functions";
-import { verifyInputKey, _storeData, _retrieveData } from "../helpers";
+import {
+  verifyInputKey,
+  _storeData,
+  _retrieveData,
+  getNotificationToken
+} from "../helpers";
 class ImportAccount extends React.Component {
   state = {
     private_key: "",
@@ -45,39 +50,41 @@ class ImportAccount extends React.Component {
         console.log("key is valid fomat");
         this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
-        registerWithUsername(this.state.username)
-          .then(msg => {
-            console.log("Inside then of registerWithUsername");
-            console.log(msg);
-            AsyncStorage.setItem("privateKey", this.state.private_key)
-              .then(() => {
-                AsyncStorage.setItem("username", this.state.username).then(
-                  () => {
-                    this.props.navigation.navigate("Wallet", {
-                      pvt_key: input_pvt_key,
-                      username: this.state.username
-                    });
-                  }
-                );
-                console.log("hey don't ignore");
-              })
-              .catch(err => {
-                console.log(err);
-              });
-          })
-          .catch(err => {
-            console.log(err);
-            console.log("Inside catch of registerWithUsername");
+        getNotificationToken().then(fcmToken => {
+          registerWithUsername(this.state.username, fcmToken)
+            .then(msg => {
+              console.log("Inside then of registerWithUsername");
+              console.log(msg);
+              AsyncStorage.setItem("privateKey", this.state.private_key)
+                .then(() => {
+                  AsyncStorage.setItem("username", this.state.username).then(
+                    () => {
+                      this.props.navigation.navigate("Wallet", {
+                        pvt_key: input_pvt_key,
+                        username: this.state.username
+                      });
+                    }
+                  );
+                  console.log("hey don't ignore");
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            })
+            .catch(err => {
+              console.log(err);
+              console.log("Inside catch of registerWithUsername");
 
-            Alert.alert("Username taked", err, [
-              {
-                text: "choose a different username",
-                onPress: () => {
-                  this.clearUsername();
+              Alert.alert("Username taked", err, [
+                {
+                  text: "choose a different username",
+                  onPress: () => {
+                    this.clearUsername();
+                  }
                 }
-              }
-            ]);
-          });
+              ]);
+            });
+        });
       })
       .catch(err => {
         Alert.alert("Invalid Input Key", err, [

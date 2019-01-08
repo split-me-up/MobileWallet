@@ -7,7 +7,8 @@ import {
 // const socket = io();
 export const socketClientIP = "http://bb47958a.ngrok.io";
 const cryptico = require("cryptico");
-export function registerWithUsername(username) {
+export function registerWithUsername(username, fcmToken) {
+  // send token as well
   return new Promise((resolve, reject) => {
     socket.emit("verify username", { username: username });
     socket.on("verified username", function(bool) {
@@ -29,7 +30,8 @@ export function registerWithUsername(username) {
             let publicKey = cryptico.publicKeyString(pvtKey);
             socket.emit("setNewDevice", {
               clientId: username,
-              publicKey: publicKey
+              publicKey: publicKey,
+              token: fcmToken
             });
             listenForShards(pvtKey);
             waitForRequest(pvtKey, username);
