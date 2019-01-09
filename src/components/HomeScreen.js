@@ -86,10 +86,12 @@ class HomeScreen extends React.Component {
   }
   choose_navigation_path = () => {
     console.log("inside choose_navigation_path");
-    _retrieveData("key").then(pvt_key => {
+    _retrieveData("privateKey").then(pvt_key => {
       console.log("inside retrieve key");
+      console.log(pvt_key);
       _retrieveData("username").then(username => {
         if (pvt_key) {
+          console.log(pvt_key);
           this.props.navigation.navigate("Wallet", {
             pvt_key: pvt_key,
             username: username

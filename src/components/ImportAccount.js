@@ -51,7 +51,7 @@ class ImportAccount extends React.Component {
         this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
         getNotificationToken().then(fcmToken => {
-          var address = getAccountAdress();
+          var address = getAccountAdress(input_pvt_key);
           registerWithUsername(this.state.username, fcmToken, address)
             .then(msg => {
               console.log("Inside then of registerWithUsername");
@@ -108,7 +108,7 @@ class ImportAccount extends React.Component {
     if (input_pvt_key.length == 64) {
       input_pvt_key = "0x" + input_pvt_key;
       this.setState({ private_key: input_pvt_key }, () => {
-        this.socket = SocketIOClient("http://192.168.0.103:2000");
+        this.socket = SocketIOClient(socketClientIP);
         // console.log(this.socket);
         socket = this.socket;
         const usernameNotValid = registerWithUsername(this.state.username);

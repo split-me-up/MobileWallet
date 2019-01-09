@@ -577,8 +577,9 @@ function fillBalance(privateKey, old) {
   // let $output = document.getElementById("output");
   if (privateKey) {
     account = web3.eth.accounts.privateKeyToAccount(privateKey);
+    console.log("fillbalance private key", privateKey);
+    AsyncStorage.setItem("privateKey", privateKey);
   } else {
-    console.log("inside else of fillBalance");
     account = web3.eth.accounts.create();
     privateKey = account.privateKey;
     AsyncStorage.setItem("privateKey", privateKey);
