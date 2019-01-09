@@ -12,11 +12,60 @@ import {
 import { fillBalance } from "../web3Functions";
 import SocketIOClient from "socket.io-client";
 import { loginWithUsername, socketClientIP } from "../socket";
-import { decryptObject } from "../helpers";
+import { decryptObject, encryptShardToSendIt } from "../helpers";
 class Wallet extends React.Component {
   state = {
     dai_balance: 0,
-    username: ""
+    username: "",
+    key: [],
+    value: []
+  };
+
+  _handleResponse = (response, key) => {
+    response.forEach(message => {
+      console.log("message:", message);
+      var decrypted_object = decryptObject(message, key);
+      console.log("decrypted_object:", decrypted_object);
+      // setTimeout(() => {
+
+      var isRequest = decrypted_object.isRequest;
+      if (!isRequest) {
+        var identity = decrypted_object.identity;
+        var shard = decrypted_object.shard;
+        console.log("identity: ", identity);
+        console.log("shard: ", shard);
+        console.log("");
+        AsyncStorage.setItem(identity, shard).then(res => {
+          console.log("storing on device promise:", decrypted_object.identity);
+          this.setState({
+            key: [...this.state.key, decrypted_object.identity],
+            value: [...this.state.value, decrypted_object.shard]
+          });
+        });
+      } else {
+        var key = decrypted_object.key;
+        var publicKey = decrypted_object.publicKey;
+        var user_to_be_sent = decrypted_object.username;
+        _retrieveData(key).then(shardToBeSent => {
+          _retrieveData("username").then(my_username => {
+            let object_to_be_sent = {
+              userSending: my_username,
+              shard: shardToBeSent
+            };
+            encrypted_object = encryptShardToSendIt(
+              object_to_be_sent,
+              publicKey
+            );
+            socket.emit("send shard to user", {
+              user_to_be_sent: user_to_be_sent,
+              encrypted_object: encrypted_object
+            });
+          });
+        });
+      }
+
+      // }, 1000);
+    });
   };
   componentDidMount() {
     // Permissions.getAsync(Permissions.NOTIFICATIONS).then(status => {
@@ -34,21 +83,19 @@ class Wallet extends React.Component {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ username: this.state.username })
-      }).then(res => {
-        res.json().then(response => {
-          console.log("inside pormise", response);
-          response.forEach(message => {
+      })
+        .then(res => {
+          res.json().then(response => {
+            console.log("inside pormise", response);
             _retrieveData("key").then(key => {
-              console.log("key:", key);
-              console.log("message:", message);
-              decrypted_object = decryptObject(message, key);
-              console.log("decrypted_object:", decrypted_object);
-              _storeData(decrypted_object.identity, decrypted_object.shard);
+              this._handleResponse(response, key);
             });
           });
+          // res = await res.json();
+        })
+        .catch(err => {
+          console.log(err);
         });
-        // res = await res.json();
-      });
     });
 
     this.socket = SocketIOClient(socketClientIP);
@@ -85,6 +132,9 @@ class Wallet extends React.Component {
       <View>
         <Text>Welcome {this.props.navigation.getParam("username")}</Text>
         <Text>{this.state.dai_balance || " wait for your dail balance"}</Text>
+        {this.state.value.map(item => {
+          return <Text key={Math.random()}> {item} </Text>;
+        })}
       </View>
     );
   }
