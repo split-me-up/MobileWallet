@@ -6,7 +6,8 @@ import {
   Text,
   View,
   StyleSheet,
-  TextInput
+  TextInput,
+  AppState
 } from "react-native";
 // import { Permissions, Notifications } from "expo";
 import { fillBalance } from "../web3Functions";
@@ -18,9 +19,24 @@ class Wallet extends React.Component {
     dai_balance: 0,
     username: "",
     key: [],
-    value: []
+    value: [],
+    appstate: AppState.currentState
   };
-
+  loginOnSockets = () => {
+    this.socket = SocketIOClient(socketClientIP);
+    socket = this.socket;
+    AsyncStorage.getItem("username")
+      .then(username => {
+        console.log("inside get item");
+        loginWithUsername(username).then(() => {
+          console.log("logged in with username");
+          this.getDaiBalance();
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   handleResponse = (response, pkey) => {
     console.log("inside handle response");
     response.forEach(message => {
@@ -68,7 +84,18 @@ class Wallet extends React.Component {
       // }, 1000);
     });
   };
+  _handleAppStateChange = newAppState => {
+    console.log("newAppState: ", newAppState);
+    if (newAppState == "background") {
+      this.socket.disconnect();
+      console.log("socket disconnected successfully");
+    } else if (newAppState == "active") {
+      this.loginOnSockets();
+      console.log("socket connected again");
+    }
+  };
   componentDidMount() {
+    AppState.addEventListener("change", this._handleAppStateChange);
     // Permissions.getAsync(Permissions.NOTIFICATIONS).then(status => {
     //   console.log("permission status: ", status);
     //   Notifications.getExpoPushTokenAsync().then(token => {
@@ -99,19 +126,12 @@ class Wallet extends React.Component {
         });
     });
 
-    this.socket = SocketIOClient(socketClientIP);
-    socket = this.socket;
-    AsyncStorage.getItem("username")
-      .then(username => {
-        console.log("inside get item");
-        loginWithUsername(username).then(() => {
-          console.log("logged in with username");
-          this.getDaiBalance();
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    this.loginOnSockets();
+  }
+  componentWillUnmount() {
+    console.log("inside component will unmount on wallet");
+    this.socket.disconnect();
+    console.log("socket disconnected successfully");
   }
   getDaiBalance = () => {
     fillBalance(this.props.navigation.getParam("pvt_key"), dai => {

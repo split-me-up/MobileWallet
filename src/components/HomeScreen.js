@@ -52,7 +52,7 @@ class HomeScreen extends React.Component {
     });
   };
   componentDidMount() {
-    AsyncStorage.clear();
+    // AsyncStorage.clear();
     _retrieveData("username")
       .then(username => {
         console.log("inside _retrieveData before onTokenRefreshListener");
