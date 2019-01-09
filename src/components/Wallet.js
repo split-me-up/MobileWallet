@@ -21,10 +21,11 @@ class Wallet extends React.Component {
     value: []
   };
 
-  _handleResponse = (response, key) => {
+  handleResponse = (response, pkey) => {
+    console.log("inside handle response");
     response.forEach(message => {
       console.log("message:", message);
-      var decrypted_object = decryptObject(message, key);
+      var decrypted_object = decryptObject(message, pkey);
       console.log("decrypted_object:", decrypted_object);
       // setTimeout(() => {
 
@@ -88,7 +89,7 @@ class Wallet extends React.Component {
           res.json().then(response => {
             console.log("inside pormise", response);
             _retrieveData("key").then(key => {
-              this._handleResponse(response, key);
+              this.handleResponse(response, key);
             });
           });
           // res = await res.json();
