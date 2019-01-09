@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { registerWithUsername, socketClientIP } from "../socket";
 import { getNotificationToken } from "../helpers";
+import { CreateNewAccount } from "../web3Functions";
 class CreateAccount extends React.Component {
   state = {
     placeholder: "Enter a username to get started",
@@ -36,14 +37,21 @@ class CreateAccount extends React.Component {
         var input_username = this.state.username;
         this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
+
         getNotificationToken().then(fcmToken => {
-          registerWithUsername(input_username, fcmToken)
+          var newAccountOBject = CreateNewAccount();
+          registerWithUsername(
+            input_username,
+            fcmToken,
+            newAccountOBject.address
+          )
             .then(msg => {
               console.log(msg);
               AsyncStorage.setItem("username", input_username);
+
               this.props.navigation.navigate("Wallet", {
                 username: input_username,
-                pvt_key: null
+                pvt_key: newAccountOBject.privateKey
               });
             })
             .catch(err => {

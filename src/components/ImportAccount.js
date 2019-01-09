@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import SocketIOClient from "socket.io-client";
 import { registerWithUsername, socketClientIP } from "../socket";
-import { KeyIsValid } from "../web3Functions";
+import { KeyIsValid, getAccountAdress } from "../web3Functions";
 import {
   verifyInputKey,
   _storeData,
@@ -51,7 +51,8 @@ class ImportAccount extends React.Component {
         this.socket = SocketIOClient(socketClientIP);
         socket = this.socket;
         getNotificationToken().then(fcmToken => {
-          registerWithUsername(this.state.username, fcmToken)
+          var address = getAccountAdress();
+          registerWithUsername(this.state.username, fcmToken, address)
             .then(msg => {
               console.log("Inside then of registerWithUsername");
               console.log(msg);

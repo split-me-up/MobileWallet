@@ -590,7 +590,15 @@ function fillBalance(privateKey, old) {
     old(balance);
   });
 }
-
+CreateNewAccount = () => {
+  account = web3.eth.accounts.create();
+  privateKey = account.privateKey;
+  let address = account.address;
+  return { privateKey, address };
+};
+getAccountAdress = privateKey => {
+  return web3.eth.accounts.privateKeyToAccount(privateKey);
+};
 function registerToContract(username, privateKey, eventsObject) {
   return new Promise(function(resolve, reject) {
     let address = web3.eth.accounts.privateKeyToAccount(privateKey);
@@ -659,4 +667,10 @@ function addStorageAccountTransaction(
 }
 // Copy Till Here
 
-export { getDaiBalance, fillBalance, KeyIsValid };
+export {
+  getDaiBalance,
+  fillBalance,
+  KeyIsValid,
+  CreateNewAccount,
+  getAccountAdress
+};
