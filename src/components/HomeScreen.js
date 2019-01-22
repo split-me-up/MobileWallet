@@ -1,34 +1,23 @@
 import React from "react";
-import { Button, Text, View, StyleSheet, AsyncStorage } from "react-native";
+import { Linking, View, StyleSheet, AsyncStorage } from "react-native";
 import { _retrieveData } from "../helpers";
 import firebase from "react-native-firebase";
 import socketClientIP from "../socket";
-const styles = StyleSheet.create({
-  button: {
-    width: 100,
-    color: "red"
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "grey",
-    height: 600
-  },
-  box: {
-    width: 200,
-    height: 300,
-    backgroundColor: "skyblue",
-    borderRadius: 20,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 30
-  },
-  text: {
-    textAlign: "center",
-    marginTop: 10
-  }
-});
+import styles from "./StyleSheet";
+import {
+  Container,
+  Content,
+  Header,
+  Title,
+  Icon,
+  Subtitle,
+  Body,
+  Left,
+  Right,
+  Button,
+  Card,
+  Text
+} from "native-base";
 
 class HomeScreen extends React.Component {
   onTokenRefreshListener = username => {
@@ -104,16 +93,49 @@ class HomeScreen extends React.Component {
   };
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Split Me Up</Text>
-        <View style={styles.box}>
-          <Button title="Open Wallet" onPress={this.choose_navigation_path} />
+      <Container>
+        <Header style={styles.header}>
+          <Body>
+            <Title style={styles.title}>Split Me Up</Title>
+            <Subtitle style={styles.subtitle}>
+              The digital way to backup Private Keys
+            </Subtitle>
+            <Subtitle style={styles.subtitle}>
+              <Text
+                onPress={() =>
+                  Linking.openURL(
+                    "https://github.com/pranav-singhal/SplitMeUp2.git"
+                  )
+                }
+              >
+                <Icon name="remove" style={styles.icons} />
+              </Text>
+            </Subtitle>
+          </Body>
+        </Header>
+        <Content
+          padder
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+        >
           <Button
-            title="Backup SeedPhrase"
+            full
+            light
+            onPress={this.choose_navigation_path}
+            style={styles.button}
+          >
+            <Text style={styles.text}>Open Wallet</Text>
+          </Button>
+          <Button
+            style={styles.button}
+            full
+            light
             onPress={() => this.props.navigation.navigate("Backup")}
-          />
-        </View>
-      </View>
+          >
+            <Text style={styles.text}>Backup SeedPhrase</Text>
+          </Button>
+        </Content>
+      </Container>
     );
   }
 }

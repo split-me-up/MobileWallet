@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "cryptico": "^1.0.2",
+    "native-base": "2.8.0",
     "node-libs-browser": "2.1.0",
     "react": "16.3.1",
     "react-native": "0.55.4",
