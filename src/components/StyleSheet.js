@@ -41,7 +41,12 @@ export default StyleSheet.create({
     fontSize: 30,
     alignSelf: "stretch"
   },
-
+  cardText: {
+    color: "white",
+    fontFamily: "josefinSans-bold",
+    fontSize: 30,
+    textAlign: "center"
+  },
   text: {
     color: "white",
     fontFamily: "josefinSans-bold",
@@ -50,6 +55,15 @@ export default StyleSheet.create({
   content: {
     backgroundColor: "rgb(239, 239, 239)"
   },
+  walletAssetText: {
+    fontSize: 30
+  },
+  assetThumbnails: {},
+  assetQuantity: {
+    width: 50,
+    textAlign: "center"
+  },
+
   body: {
     flex: 1,
     justifyContent: "center"
