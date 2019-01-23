@@ -152,7 +152,11 @@ class Wallet extends React.Component {
     return (
       <View>
         <Text>Welcome {this.props.navigation.getParam("username")}</Text>
-        <Text>{this.state.dai_balance || " wait for your dail balance"}</Text>
+        <Text>
+          {" "}
+          Your Dai Balance is:{" "}
+          {this.state.dai_balance || " wait for your dail balance"}
+        </Text>
         <Text>
           Your Private Key is: {this.props.navigation.getParam("pvt_key")}
         </Text>
