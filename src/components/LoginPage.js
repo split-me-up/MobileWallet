@@ -2,7 +2,7 @@ import React from "react";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import SocketIOClient from "socket.io-client";
 import { registerWithUsername, loginWithUsername } from "../socket";
-
+import styles from "./StyleSheet";
 import { getDaiBalance, fillBalance } from "../web3Functions";
 import Wallet from "./Wallet";
 import {
@@ -33,44 +33,55 @@ class LoginPage extends React.Component {
     if (this.state.username == "" && this.state.private_key == "") {
       return (
         <Container>
-          <Header>
+          <Header style={styles.header}>
             <Left>
               <Button
                 transparent
                 onPress={() => this.props.navigation.goBack()}
               >
-                <Icon type="FontAwesome5" name="arrow-left" />
+                <Icon type="FontAwesome" name="arrow-left" />
               </Button>
             </Left>
             <Body />
             <Right />
           </Header>
-          <Content>
-            <Card>
-              <Text>
+          <Content
+            padder
+            style={styles.content}
+            contentContainerStyle={styles.contentContainer}
+          >
+            <Card style={styles.card}>
+              <Text style={styles.text}>
                 Import a previous account or enter a username to genearete a new
                 key
               </Text>
 
               <Button
+                full
+                light
+                style={styles.cardButton}
                 onPress={() => {
                   this.props.navigation.navigate("ImportAccount");
                 }}
               >
-                <Text>Import Account</Text>
+                <Text style={styles.text}>Import Account</Text>
               </Button>
             </Card>
-            <Card>
-              <Text>
+
+            <Card style={styles.card}>
+              <Text style={styles.text}>
                 Import a previous account or enter a username to genearete a new
                 key
               </Text>
               <Button
+                full
+                light
+                style={styles.cardButton}
                 onPress={() => {
                   this.props.navigation.navigate("CreateAccount");
                 }}
               >
-                <Text>Create Account</Text>
+                <Text style={styles.text}>Create Account</Text>
               </Button>
             </Card>
           </Content>

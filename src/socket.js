@@ -5,7 +5,7 @@ import {
   encryptShardToSendIt
 } from "./helpers";
 // const socket = io();
-export const socketClientIP = "http://bb47958a.ngrok.io";
+export const socketClientIP = "http://1237271a.ngrok.io/";
 const cryptico = require("cryptico");
 export function registerWithUsername(username, fcmToken, address) {
   // send token as well

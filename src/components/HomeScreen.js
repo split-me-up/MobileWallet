@@ -94,7 +94,7 @@ class HomeScreen extends React.Component {
   render() {
     return (
       <Container>
-        <Header style={styles.header}>
+        <Header style={styles.headerMain}>
           <Body>
             <Title style={styles.title}>Split Me Up</Title>
             <Subtitle style={styles.subtitle}>
@@ -108,7 +108,7 @@ class HomeScreen extends React.Component {
                   )
                 }
               >
-                <Icon type="FontAwesome5" name="github" />
+                <Icon type="FontAwesome" name="github" />
               </Text>
             </Subtitle>
           </Body>

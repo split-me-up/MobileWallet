@@ -7,9 +7,16 @@ export default StyleSheet.create({
     width: 400,
     height: 100
   },
-  header: {
+  cardButton: {
+    backgroundColor: "rgb(1, 209, 178)",
+    width: 360
+  },
+  headerMain: {
     backgroundColor: "rgb(34, 208, 178)",
     height: 140
+  },
+  header: {
+    backgroundColor: "rgb(34, 208, 178)"
   },
   subtitle: {
     textAlign: "center",
@@ -21,6 +28,12 @@ export default StyleSheet.create({
     color: "rgb(47, 166, 154)",
     fontSize: 50
   },
+  card: {
+    width: 400,
+    marginBottom: 10,
+    padding: 20,
+    backgroundColor: "rgb(239, 239, 239)"
+  },
   contentContainer: { justifyContent: "center", flex: 1, alignSelf: "center" },
   title: {
     fontFamily: "pacifico",
@@ -28,6 +41,7 @@ export default StyleSheet.create({
     fontSize: 30,
     alignSelf: "stretch"
   },
+
   text: {
     color: "white",
     fontFamily: "josefinSans-bold",
