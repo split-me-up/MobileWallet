@@ -108,7 +108,7 @@ class HomeScreen extends React.Component {
                   )
                 }
               >
-                <Icon name="remove" style={styles.icons} />
+                <Icon type="FontAwesome5" name="github" />
               </Text>
             </Subtitle>
           </Body>
