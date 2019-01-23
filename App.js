@@ -29,7 +29,10 @@ const AppNavigator = createStackNavigator({
     screen: CreateAccount
   },
   Wallet: {
-    screen: Wallet
+    screen: Wallet,
+    navigationOptions: {
+      header: null
+    }
   },
   initialRouteName: "Home"
 });

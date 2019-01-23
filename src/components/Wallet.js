@@ -1,15 +1,23 @@
 import React from "react";
+
+import { AsyncStorage, Alert, View, StyleSheet, AppState } from "react-native";
 import {
-  AsyncStorage,
-  Alert,
+  Container,
+  Content,
+  Thumbnail,
+  CardItem,
+  Header,
+  Title,
+  Subtitle,
+  Body,
+  Left,
+  Right,
   Button,
+  Card,
   Text,
-  View,
-  StyleSheet,
-  TextInput,
-  AppState
-} from "react-native";
-// import { Permissions, Notifications } from "expo";
+  Icon
+} from "native-base";
+import styles from "./StyleSheet";
 import { fillBalance } from "../web3Functions";
 import SocketIOClient from "socket.io-client";
 import { loginWithUsername, socketClientIP } from "../socket";
@@ -150,20 +158,54 @@ class Wallet extends React.Component {
 
   render() {
     return (
-      <View>
-        <Text>Welcome {this.props.navigation.getParam("username")}</Text>
-        <Text>
-          {" "}
-          Your Dai Balance is:{" "}
-          {this.state.dai_balance || " wait for your dail balance"}
-        </Text>
-        <Text>
-          Your Private Key is: {this.props.navigation.getParam("pvt_key")}
-        </Text>
-        {this.state.value.map(item => {
-          return <Text key={Math.random()}> {item} </Text>;
-        })}
-      </View>
+      <Container>
+        <Header style={styles.header}>
+          <Left>
+            <Button transparent onPress={() => this.props.navigation.goBack()}>
+              <Icon type="FontAwesome" name="arrow-left" />
+            </Button>
+          </Left>
+          <Body />
+          <Right />
+        </Header>
+
+        <Content style={styles.content}>
+          <Card style={styles.assetCard}>
+            <CardItem>
+              <Text>Welcome {this.props.navigation.getParam("username")}</Text>
+            </CardItem>
+            <CardItem>
+              <Left>
+                <Text>Asset</Text>
+              </Left>
+              <Right>
+                <Text>Quantity</Text>
+              </Right>
+            </CardItem>
+            <CardItem>
+              <Left>
+                <Thumbnail
+                  style={styles.assetThumbnails}
+                  source={require("../assets/images/dai.png")}
+                />
+                <Text style={styles.walletAssetText}>Dai</Text>
+              </Left>
+              <Right>
+                <Text style={styles.assetQuantity}>
+                  {this.state.dai_balance || " Loading"}
+                </Text>
+              </Right>
+            </CardItem>
+          </Card>
+
+          <Text>
+            Your Private Key is: {this.props.navigation.getParam("pvt_key")}
+          </Text>
+          {this.state.value.map(item => {
+            return <Text key={Math.random()}> {item} </Text>;
+          })}
+        </Content>
+      </Container>
     );
   }
 }

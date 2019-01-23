@@ -51,7 +51,7 @@ class LoginPage extends React.Component {
             contentContainerStyle={styles.contentContainer}
           >
             <Card style={styles.card}>
-              <Text style={styles.text}>
+              <Text style={styles.cardText}>
                 Import a previous account or enter a username to genearete a new
                 key
               </Text>
@@ -69,7 +69,7 @@ class LoginPage extends React.Component {
             </Card>
 
             <Card style={styles.card}>
-              <Text style={styles.text}>
+              <Text style={styles.cardText}>
                 Import a previous account or enter a username to genearete a new
                 key
               </Text>
