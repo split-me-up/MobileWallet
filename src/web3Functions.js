@@ -525,6 +525,88 @@ function addStorageAccountTransaction(
             });
     });
 }
+
+
+/*
+    Function to create a transaction to Dai Contract to send dai to some account
+    @Param { string } privateKey : private key of the sender
+    @Param { string } receiverAddress : ethereum address of the receiver
+    @Param { string } amount : amount to dai that are to be sent
+    @Param { object } eventsObj : explained below
+
+    eventsObj : Events in the Events Object
+    1. authoriseTransaction : Arguments
+                                    1. transaction : Example - {
+                                                from: senderAddress,
+                                                to: receiverAddress,
+                                                gas: gasAmount,
+                                                data: signedData
+                                            }
+                                    2. additionalInfo : Example - {
+                                                gasInEther : gas converted into eth to be shown to user,
+                                                ERC20Token : 'DaiStableCoin',
+                                                ERC20Amount : amount
+                                            }
+                                    3. callback function : Further code runs when this function is called
+
+    2. transactionMined : No Arguments just to tell user that transaction is mined
+
+    3. transactionMining : Arguments - hash (of the transaction to create Etherscan Link)
+ */
+function sendDaiTransaction(myPrivateKey, receiverAddress, amount, eventsObj) {
+    let wadAmount = web3.utils.toWei(amount.toString(), 'ether');
+    let myAddress = web3.eth.accounts.privateKeyToAccount(myPrivateKey).address;
+    return new Promise(function(resolve, reject) {
+        console.log("Sending Dai Transaction");
+        TokenContract.methods
+            .transfer(receiverAddress, wadAmount)
+            .estimateGas({ from: myAddress })
+            .then(function (gasAmount) {
+                web3.eth.getGasPrice()
+                    .then(function (gasPrice) {
+                        let gasValue = gasPrice * gasAmount;
+                        let gasInEther = web3.utils.fromWei(gasValue);
+                        let transaction = {
+                            from: web3.utils.toChecksumAddress(myAddress),
+                            to: web3.utils.toChecksumAddress(TokenAddress),
+                            gas: gasAmount + 1000,
+                            data: contract.methods.addNewStorageAccount(username).encodeABI()
+                        };
+                        let additionalInfo = {
+                            gasInEther,
+                            ERC20Token : 'DaiStableCoin',
+                            ERC20Amount : amount
+                        };
+                        eventsObj.authoriseTransaction(transaction, additionalInfo, function () {
+                           let signPromise = web3.eth.accounts.signTransaction(
+                               transaction,
+                               myPrivateKey
+                           );
+                           signPromise.then(signedTx => {
+                               console.log(signedTx);
+                               const sentTx = web3.eth.sendSignedTransaction(
+                                   signedTx.raw || signedTx.rawTransaction
+                               );
+                               sentTx.on("receipt", receipt => {
+                                   console.log(receipt);
+                                   eventsObj.transactionMined();
+                                   resolve(true);
+                               });
+                               sentTx.on("transactionHash", function(hash) {
+                                   // alert("Transaction Mining");
+                                   eventsObj.transactionMining(hash);
+                                   console.log("hash =", hash);
+                               });
+                               sentTx.on("error", err => {
+                                   reject(err);
+                               });
+                           })
+                        });
+                    });
+            });
+    });
+}
+
 // Copy Till Here
 
 export {
@@ -533,5 +615,6 @@ export {
     KeyIsValid,
     CreateNewAccount,
     getAccountAdress,
-    checkUsernameAvailabiliy
+    checkUsernameAvailabiliy,
+    sendDaiTransaction
 };

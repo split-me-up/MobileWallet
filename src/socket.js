@@ -6,7 +6,7 @@ import {
 } from "./helpers";
 import { checkUsernameAvailabiliy } from "./web3Functions";
 // const socket = io();
-export const socketClientIP = "http://192.168.0.102:2000";
+export const socketClientIP = "http://1237271a.ngrok.io";
 const cryptico = require("cryptico");
 export function registerWithUsername(username, fcmToken, address) {
   // send token as well
