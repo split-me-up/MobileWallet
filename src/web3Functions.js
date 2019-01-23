@@ -337,6 +337,12 @@ const contractAddress = "0xE65eC838360168057b780D85FFD4C2CD8B33B158";
 const contract = new web3.eth.Contract(contractAbi, contractAddress);
 console.log(TokenContract);
 
+
+/*
+    Function to get the Dai Balance of a certain address
+    @Param { string } address
+    @Returns { number } value wrapped in a promise
+ */
 function getDaiBalance(address) {
     return new Promise(function(resolve, reject) {
         TokenContract.methods
@@ -351,8 +357,14 @@ function getDaiBalance(address) {
     });
 }
 
+
+/*
+    Function to check whether a certain private key is valid or not
+    @Param { string } privateKey
+    @Returns { boolean } wrapped in promise
+ */
 async function KeyIsValid(privateKey) {
-    returnState = false;
+    let returnState = false;
     try {
         const account = await web3.eth.accounts.privateKeyToAccount(privateKey);
         returnState = true;
@@ -363,7 +375,13 @@ async function KeyIsValid(privateKey) {
     }
 }
 
-function fillBalance(privateKey, old) {
+
+/*
+    Function to store the private key in the mobile's storage
+    @Param { string } privateKey
+    @Param { function } callback which is called with the dai balance
+ */
+function fillBalance(privateKey, callback) {
     let account;
     // let $output = document.getElementById("output");
     if (privateKey) {
@@ -379,21 +397,36 @@ function fillBalance(privateKey, old) {
     let address = account.address;
     getDaiBalance(address).then(function(balance) {
         // $output.innerHTML += "\nYour Dai Balance = " + balance;
-        old(balance);
+        callback(balance);
     });
 }
 
+
+/*
+    Function to create a new ethereum account
+    @Returns { object } {privateKey , address}
+ */
 let CreateNewAccount = () => {
-    account = web3.eth.accounts.create();
-    privateKey = account.privateKey;
+    let account = web3.eth.accounts.create();
+    let privateKey = account.privateKey;
     let address = account.address;
     return { privateKey, address };
 };
 
+
+/*
+    Function to get the ethereum address from privateKey
+    @Param { string } privateKey
+    @Returns { string } address
+ */
 let getAccountAdress = privateKey => {
     return web3.eth.accounts.privateKeyToAccount(privateKey);
 };
 
+
+/*
+    Function not used now
+ */
 function registerToContract(username, privateKey, eventsObject) {
     return new Promise(function(resolve, reject) {
         let address = web3.eth.accounts.privateKeyToAccount(privateKey);
@@ -408,6 +441,13 @@ function registerToContract(username, privateKey, eventsObject) {
     });
 }
 
+
+
+/*
+    Function to check whether a certain username for the storage account is available on the contract
+    @Param { string } username
+    @Returns { boolean } true if available and vice versa wrapped in promise
+ */
 function checkUsernameAvailabiliy(username) {
     return new Promise(function(resolve, reject) {
         contract.methods
@@ -423,6 +463,16 @@ function checkUsernameAvailabiliy(username) {
     });
 }
 
+
+/*
+    Function to make a transaction to the SplitMeUp smart contract
+    to add the storage account to the contract
+    @Param { string } username
+    @Param { string } privateKey
+    @Param { string } address
+    @Param { object } callingFunctions : events object
+
+ */
 function addStorageAccountTransaction(
     username,
     privateKey,
