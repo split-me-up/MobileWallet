@@ -30,7 +30,7 @@ export function registerWithUsername(username, fcmToken, address) {
               address: address
             });
             listenForShards(pvtKey);
-            waitForRequest(pvtKey, username);
+            waitForRequest(JSON.stringify(pvtKey.toJSON()), username);
             // document.getElementById("output").innerHTML +=
             //   "\nDevice Stored on socket";
             console.log("Device Stored on Socket");
@@ -66,8 +66,8 @@ export function loginWithUsername(username) {
       console.log("everything is fine till here");
       let publicKey = cryptico.publicKeyString(PVTKEY);
       socket.emit("login user", { clientId: username, publicKey: publicKey });
-      listenForShards(PVTKEY);
-      waitForRequest(PVTKEY, username);
+      listenForShards(private_key);
+      waitForRequest(private_key, username);
 
       resolve();
     });
@@ -89,9 +89,7 @@ function listenForShards(privateKey) {
     // document.getElementById("output").innerHTML +=
     //   "\nObj = " + JSON.stringify(decrypted_object);
     console.log("recieved shard");
-    // console.log("decrypted_object");
-    // console.log(decrypted_object);
-    // console.log("decrypted_object");
+    console.log("decrypted_object:", decrypted_object);
     try {
       Android.sendNewShard(JSON.stringify(decrypted_object));
     } catch (e) {
@@ -105,7 +103,7 @@ function listenForShards(privateKey) {
 function waitForRequest(privateKey, username) {
   socket.on("request shard from android", function(data) {
     let decrypted_object = decryptObject(data, privateKey);
-    console.log("decrypted_object");
+    console.log("decrypted_object: ", decrypted_object);
 
     let shardToBeSent;
     try {
@@ -114,23 +112,25 @@ function waitForRequest(privateKey, username) {
     } catch (e) {
       // shardToBeSent = localStorage.getItem(decrypted_object.key);
       console.log("inside catch of request shard from android");
-      shardToBeSent = _retrieveData(decrypted_object.key);
+      shardToBeSentPromise = _retrieveData(decrypted_object.key);
     } finally {
-      let user_to_be_sent = decrypted_object.username;
-      let object_to_be_sent = {
-        userSending: username,
-        shard: shardToBeSent
-      };
-      let encrypted_object = encryptShardToSendIt(
-        object_to_be_sent,
-        decrypted_object.publicKey
-      );
-      console.log("encrypted_object");
-      console.log("encrypted_object");
-      // console.log(encrypted_object);
-      socket.emit("send shard to user", {
-        user_to_be_sent: user_to_be_sent,
-        encrypted_object: encrypted_object
+      shardToBeSentPromise.then(shardToBeSent => {
+        let user_to_be_sent = decrypted_object.username;
+        let object_to_be_sent = {
+          userSending: username,
+          shard: shardToBeSent
+        };
+        let encrypted_object = encryptShardToSendIt(
+          object_to_be_sent,
+          decrypted_object.publicKey
+        );
+        console.log("encrypted_object");
+        console.log("encrypted_object");
+        // console.log(encrypted_object);
+        socket.emit("send shard to user", {
+          user_to_be_sent: user_to_be_sent,
+          encrypted_object: encrypted_object
+        });
       });
     }
   });
