@@ -23,10 +23,16 @@ const AppNavigator = createStackNavigator({
     }
   },
   ImportAccount: {
-    screen: ImportAccount
+    screen: ImportAccount,
+    navigationOptions: {
+      header: null
+    }
   },
   CreateAccount: {
-    screen: CreateAccount
+    screen: CreateAccount,
+    navigationOptions: {
+      header: null
+    }
   },
   Wallet: {
     screen: Wallet,

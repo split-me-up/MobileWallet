@@ -1,16 +1,32 @@
 import React from "react";
 import {
   Alert,
-  Button,
   Text,
   View,
   StyleSheet,
   TextInput,
   AsyncStorage
 } from "react-native";
+import {
+  Container,
+  Content,
+  Header,
+  Title,
+  Subtitle,
+  Body,
+  Item,
+  Left,
+  Right,
+  Button,
+  Card,
+  Icon,
+  Input,
+  Form
+} from "native-base";
 import SocketIOClient from "socket.io-client";
 import { registerWithUsername, socketClientIP } from "../socket";
 import { KeyIsValid, getAccountAdress } from "../web3Functions";
+import styles from "./StyleSheet";
 import {
   verifyInputKey,
   _storeData,
@@ -20,7 +36,7 @@ import {
 class ImportAccount extends React.Component {
   state = {
     private_key: "",
-    import_account_placeholder: "enter your private key here",
+    import_account_placeholder: "Enter your private key here",
     username_placeholder: ""
   };
 
@@ -38,7 +54,7 @@ class ImportAccount extends React.Component {
       username_placeholder: ""
     });
   };
-  newSubmitKey = async () => {
+  submitKey = async () => {
     console.log("inside newSubmitKey");
     var input_pvt_key = this.refs["import-account-text-field"].props.value;
     this.setState({
@@ -98,101 +114,63 @@ class ImportAccount extends React.Component {
         ]);
       });
   };
-
-  submitKey = () => {
-    console.log("inside Submit Key");
-    var input_pvt_key = this.refs["import-account-text-field"].props.value;
-    this.setState({
-      username: this.state.username_placeholder
-    });
-    if (input_pvt_key.length == 64) {
-      input_pvt_key = "0x" + input_pvt_key;
-      this.setState({ private_key: input_pvt_key }, () => {
-        this.socket = SocketIOClient(socketClientIP);
-        // console.log(this.socket);
-        socket = this.socket;
-        const usernameNotValid = registerWithUsername(this.state.username);
-        console.log("usernameNotValid");
-        console.log(usernameNotValid);
-        if (usernameNotValid) {
-          Alert.alert(
-            "Invalid Username entered",
-            "This username is already taken",
-            [
-              {
-                text: "enter a different username",
-                onPress: () => {
-                  console.log("inside re enter username");
-                  this.clearText();
-                }
-              }
-            ]
-          );
-        } else {
-          console.log(input_pvt_key);
-          KeyIsValid(input_pvt_key).then(key_is_valid => {
-            if (key_is_valid) {
-              console.log("inside key is valid call if");
-              this.setState({ username: this.state.username_placeholder });
-              this.props.navigation.navigate("Wallet", {
-                pvt_key: input_pvt_key
-              });
-            } else {
-              console.log("inside key is valid call else");
-              Alert.alert(
-                "Account does not exist",
-                "The key you have entered does not match any accounts on this chain",
-                [
-                  {
-                    text: "enter a different key",
-                    onPress: () => {
-                      console.log("entered a non existent account");
-                      this.clearText();
-                    }
-                  }
-                ]
-              );
-            }
-          });
-        }
-      });
-    } else {
-      Alert.alert(
-        "Invalid Key entered",
-        "The key you have entered is not 64 bits long",
-        [
-          {
-            text: "Re-enter Key",
-            onPress: () => {
-              console.log("inside re enter key");
-              this.clearText();
-            }
-          }
-        ]
-      );
+  componentWillUnmount() {
+    if (this.socket !== undefined) {
+      this.socket.disconnect();
     }
-  };
-
+  }
   render() {
     return (
-      <View>
-        <TextInput
-          value={this.state.import_account_placeholder}
-          ref="import-account-text-field"
-          onChangeText={text => {
-            this.setState({ import_account_placeholder: text });
-          }}
-          onFocus={this.clearText}
-        />
-        <TextInput
-          value={this.state.username_placeholder}
-          onChangeText={text => {
-            this.setState({ username_placeholder: text });
-          }}
-          onFocus={this.clearUsername}
-        />
-        <Button title="Submit Key" onPress={this.newSubmitKey} />
-      </View>
+      <Container>
+        <Header style={styles.header}>
+          <Left>
+            <Button transparent onPress={() => this.props.navigation.goBack()}>
+              <Icon type="FontAwesome" name="arrow-left" />
+            </Button>
+          </Left>
+          <Body />
+          <Right />
+        </Header>
+        <Content
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <Form>
+            <Text style={styles.formText}>
+              If you already have an Ethereum account, Enter your private key
+              below( without the '0x') and choose a username
+            </Text>
+            <Item>
+              <Input
+                placeholder="Username"
+                onChangeText={text => {
+                  this.setState({ username_placeholder: text });
+                }}
+                onFocus={this.clearUsername}
+              />
+            </Item>
+            <Item last>
+              <Input
+                placeholder="Enter your private key here"
+                ref="import-account-text-field"
+                onChangeText={text => {
+                  this.setState({ import_account_placeholder: text });
+                }}
+                onFocus={this.clearText}
+              />
+            </Item>
+          </Form>
+
+          <Button
+            style={[styles.button, { alignSelf: "center" }]}
+            title="Submit Key"
+            full
+            onPress={this.submitKey}
+          >
+            <Text style={styles.text}>Submit Key</Text>
+          </Button>
+        </Content>
+      </Container>
     );
   }
 }

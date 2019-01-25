@@ -3,13 +3,29 @@ import SocketIOClient from "socket.io-client";
 import {
   Alert,
   ActivityIndicator,
-  Button,
   Text,
   View,
   StyleSheet,
   TextInput,
   AsyncStorage
 } from "react-native";
+import {
+  Container,
+  Content,
+  Header,
+  Title,
+  Subtitle,
+  Body,
+  Item,
+  Left,
+  Right,
+  Button,
+  Card,
+  Icon,
+  Input,
+  Form
+} from "native-base";
+import styles from "./StyleSheet";
 import { registerWithUsername, socketClientIP } from "../socket";
 import { getNotificationToken } from "../helpers";
 import { CreateNewAccount } from "../web3Functions";
@@ -24,9 +40,12 @@ class CreateAccount extends React.Component {
       placeholder: ""
     });
   };
+
   componentWillUnmount() {
+    if (this.socket !== undefined) {
+      this.socket.disconnect();
+    }
     console.log("inside component will unmount");
-    this.socket.disconnect();
   }
   submitUsername = () => {
     this.setState(
@@ -78,19 +97,45 @@ class CreateAccount extends React.Component {
   };
   render() {
     return (
-      <View>
-        <Text> create and account by entering a username below</Text>
-        <TextInput
-          value={this.state.placeholder}
-          ref="username-text-field"
-          onChangeText={text => {
-            this.setState({ placeholder: text });
-          }}
-          onFocus={this.clearText}
-        />
-
-        <Button title="Submit Username" onPress={this.submitUsername} />
-      </View>
+      <Container>
+        <Header style={styles.header}>
+          <Left>
+            <Button transparent onPress={() => this.props.navigation.goBack()}>
+              <Icon type="FontAwesome" name="arrow-left" />
+            </Button>
+          </Left>
+          <Body />
+          <Right />
+        </Header>
+        <Content
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <Form>
+            <Text style={styles.formText}>
+              Create an Ethereum account by entering a username below
+            </Text>
+            <Item>
+              <Input
+                value={this.state.placeholder}
+                ref="username-text-field"
+                onChangeText={text => {
+                  this.setState({ placeholder: text });
+                }}
+                onFocus={this.clearText}
+              />
+            </Item>
+          </Form>
+          <Button
+            full
+            title="Submit Username"
+            onPress={this.submitUsername}
+            style={[styles.button, { alignSelf: "center" }]}
+          >
+            <Text style={styles.text}> Submit UserName</Text>
+          </Button>
+        </Content>
+      </Container>
     );
   }
 }

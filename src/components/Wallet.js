@@ -197,10 +197,9 @@ class Wallet extends React.Component {
               </Right>
             </CardItem>
           </Card>
-
-          <Text>
-            Your Private Key is: {this.props.navigation.getParam("pvt_key")}
-          </Text>
+          {
+            //this.props.navigation.getParam("pvt_key")
+          }
           {this.state.value.map(item => {
             return <Text key={Math.random()}> {item} </Text>;
           })}

@@ -18,6 +18,10 @@ export default StyleSheet.create({
   header: {
     backgroundColor: "rgb(34, 208, 178)"
   },
+  formText: {
+    fontFamily: "josefinSans-bold",
+    textAlign: "center"
+  },
   subtitle: {
     textAlign: "center",
     fontFamily: "pacifico",
@@ -32,7 +36,7 @@ export default StyleSheet.create({
     width: 400,
     marginBottom: 10,
     padding: 20,
-    backgroundColor: "rgb(239, 239, 239)"
+    backgroundColor: "rgb(141, 229, 209)"
   },
   contentContainer: { justifyContent: "center", flex: 1, alignSelf: "center" },
   title: {
