@@ -29,7 +29,6 @@ class Wallet extends React.Component {
     username: "",
     key: [],
     sentMsgCount: 0,
-    value: [],
     loading: true,
     loadingMessage: "",
     appstate: AppState.currentState
@@ -66,57 +65,7 @@ class Wallet extends React.Component {
         }
       ]);
     }
-    response.forEach(message => {
-      console.log("message:", message);
-      var decrypted_object = decryptObject(message, pkey);
-      console.log("decrypted_object:", decrypted_object);
-      // setTimeout(() => {
-
-      var isRequest = decrypted_object.isRequest;
-      if (!isRequest) {
-        var identity = decrypted_object.identity;
-        var shard = decrypted_object.shard;
-        console.log("identity: ", identity);
-        console.log("shard: ", shard);
-        console.log("");
-        AsyncStorage.setItem(identity, shard).then(res => {
-          console.log("storing on device promise:", decrypted_object.identity);
-          this.setState({
-            key: [...this.state.key, decrypted_object.identity],
-            value: [...this.state.value, decrypted_object.shard]
-          });
-        });
-      } else {
-        var key = decrypted_object.key;
-        var publicKey = decrypted_object.publicKey;
-        var user_to_be_sent = decrypted_object.username;
-        _retrieveData(key).then(shardToBeSent => {
-          _retrieveData("username").then(my_username => {
-            let object_to_be_sent = {
-              userSending: my_username,
-              shard: shardToBeSent
-            };
-            encrypted_object = encryptShardToSendIt(
-              object_to_be_sent,
-              publicKey
-            );
-            socket.emit("send shard to user", {
-              user_to_be_sent: user_to_be_sent,
-              encrypted_object: encrypted_object
-            });
-            socket.on("message sent", bool => {
-              if (bool) {
-                this.setState({
-                  sentMsgCount: this.state.sentMsgCount + 1
-                });
-              }
-            });
-          });
-        });
-      }
-
-      i++;
-      console.log("i:", i);
+    let fireAlertforMessage = () => {
       if (i <= response.length) {
         console.log("inside this");
 
@@ -146,6 +95,64 @@ class Wallet extends React.Component {
           );
         }
       }
+    };
+    response.forEach(message => {
+      console.log("message:", message);
+      var decrypted_object = decryptObject(message, pkey);
+      console.log("decrypted_object:", decrypted_object);
+      // setTimeout(() => {
+
+      var isRequest = decrypted_object.isRequest;
+      if (!isRequest) {
+        var identity = decrypted_object.identity;
+        var shard = decrypted_object.shard;
+        console.log("identity: ", identity);
+        console.log("shard: ", shard);
+        console.log("");
+        AsyncStorage.setItem(identity, shard).then(res => {
+          console.log("storing on device promise:", decrypted_object.identity);
+          this.setState({
+            key: [...this.state.key, decrypted_object.identity],
+            value: [...this.state.value, decrypted_object.shard]
+          });
+        });
+        i++;
+        fireAlertforMessage();
+      } else {
+        var key = decrypted_object.key;
+        var publicKey = decrypted_object.publicKey;
+        var user_to_be_sent = decrypted_object.username;
+        _retrieveData(key).then(shardToBeSent => {
+          _retrieveData("username").then(my_username => {
+            let object_to_be_sent = {
+              userSending: my_username,
+              shard: shardToBeSent
+            };
+            encrypted_object = encryptShardToSendIt(
+              object_to_be_sent,
+              publicKey
+            );
+            socket.emit("send shard to user", {
+              user_to_be_sent: user_to_be_sent,
+              encrypted_object: encrypted_object
+            });
+            socket.on("message sent", bool => {
+              if (bool) {
+                console.log("inside if of on message sent");
+                console.log(this.state.sentMsgCount);
+                this.setState({
+                  sentMsgCount: this.state.sentMsgCount + 1
+                });
+              }
+              i++;
+              fireAlertforMessage();
+            });
+          });
+        });
+      }
+
+      console.log("i:", i);
+
       // }, 1000);
     });
   };
@@ -265,9 +272,6 @@ class Wallet extends React.Component {
             {
               //this.props.navigation.getParam("pvt_key")
             }
-            {this.state.value.map(item => {
-              return <Text key={Math.random()}> {item} </Text>;
-            })}
           </Content>
         </Container>
       );
