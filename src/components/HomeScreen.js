@@ -1,7 +1,10 @@
 import React from "react";
 import { Linking, View, StyleSheet, AsyncStorage } from "react-native";
 import { _retrieveData } from "../helpers";
-import firebase from "react-native-firebase";
+import firebase, {
+  Notification,
+  NotificationOpen
+} from "react-native-firebase";
 import socketClientIP from "../socket";
 import styles from "./StyleSheet";
 import {
@@ -42,6 +45,17 @@ class HomeScreen extends React.Component {
   };
   componentDidMount() {
     // AsyncStorage.clear();
+
+    firebase
+      .notifications()
+      .getInitialNotification()
+      .then((notificationOpen: NotificationOpen) => {
+        if (notificationOpen) {
+          this.choose_navigation_path();
+        } else {
+          console.log("app not opnede using notification");
+        }
+      });
     _retrieveData("username")
       .then(username => {
         console.log("inside _retrieveData before onTokenRefreshListener");
@@ -72,6 +86,9 @@ class HomeScreen extends React.Component {
             });
         }
       });
+  }
+  componentWillUnmount() {
+    console.log("component unmounting");
   }
   choose_navigation_path = () => {
     console.log("inside choose_navigation_path");

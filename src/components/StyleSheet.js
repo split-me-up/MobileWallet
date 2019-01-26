@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   button: {
     marginTop: 10,
-    backgroundColor: "rgb(1, 209, 178)",
+    backgroundColor: "rgba(1, 209, 178,0.3)",
     width: 400,
     height: 100
   },

@@ -77,7 +77,7 @@ class CreateAccount extends React.Component {
               console.log(err);
               console.log("Inside catch of registerWithUsername");
 
-              Alert.alert("Username taked", err, [
+              Alert.alert("Username taken", err, [
                 {
                   text: "choose a different username",
                   onPress: () => {

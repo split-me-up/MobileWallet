@@ -6,7 +6,7 @@ import {
 } from "./helpers";
 import { checkUsernameAvailabiliy } from "./web3Functions";
 // const socket = io();
-export const socketClientIP = "http://1237271a.ngrok.io";
+export const socketClientIP = "http://fdf32d3d.ngrok.io";
 const cryptico = require("cryptico");
 export function registerWithUsername(username, fcmToken, address) {
   // send token as well
@@ -45,6 +45,7 @@ export function registerWithUsername(username, fcmToken, address) {
         // return bool;
       })
       .catch(function() {
+        reject("Username is Already Taken");
         console.log("Username Already Taken from socket.js at line 48");
       });
   });

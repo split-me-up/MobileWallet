@@ -18,6 +18,7 @@ import {
   Icon
 } from "native-base";
 import styles from "./StyleSheet";
+import Loader from "./Loader";
 import { fillBalance } from "../web3Functions";
 import SocketIOClient from "socket.io-client";
 import { loginWithUsername, socketClientIP } from "../socket";
@@ -27,7 +28,10 @@ class Wallet extends React.Component {
     dai_balance: 0,
     username: "",
     key: [],
+    sentMsgCount: 0,
     value: [],
+    loading: true,
+    loadingMessage: "",
     appstate: AppState.currentState
   };
   loginOnSockets = () => {
@@ -46,7 +50,22 @@ class Wallet extends React.Component {
       });
   };
   handleResponse = (response, pkey) => {
+    this.setState({
+      loadingMessage: "Please wait while we fetch your latest messages"
+    });
     console.log("inside handle response");
+    var i = 0;
+    if (response.length === 0) {
+      console.log("inside response.length === 0");
+      this.setState({
+        loading: false
+      });
+      Alert.alert("No message Recieved", "You don't have any new messages", [
+        {
+          text: "Ok"
+        }
+      ]);
+    }
     response.forEach(message => {
       console.log("message:", message);
       var decrypted_object = decryptObject(message, pkey);
@@ -85,10 +104,48 @@ class Wallet extends React.Component {
               user_to_be_sent: user_to_be_sent,
               encrypted_object: encrypted_object
             });
+            socket.on("message sent", bool => {
+              if (bool) {
+                this.setState({
+                  sentMsgCount: this.state.sentMsgCount + 1
+                });
+              }
+            });
           });
         });
       }
 
+      i++;
+      console.log("i:", i);
+      if (i <= response.length) {
+        console.log("inside this");
+
+        this.setState({
+          loading: false
+        });
+        if (this.state.sentMsgCount == 0) {
+          Alert.alert(
+            "No reward Recieved",
+            "sorry! you did not recieve a reward at this time. You may have recieved a new piece so open the app next time you get a notification",
+            [
+              {
+                text: "Ok"
+              }
+            ]
+          );
+        } else {
+          Alert.alert(
+            "Reward Recieved",
+            `Congrats! you have recieved ${this.state.sentMsgCount *
+              0.5} Dai which will be reflected in your balance soon!`,
+            [
+              {
+                text: "Ok"
+              }
+            ]
+          );
+        }
+      }
       // }, 1000);
     });
   };
@@ -157,55 +214,64 @@ class Wallet extends React.Component {
   };
 
   render() {
-    return (
-      <Container>
-        <Header style={styles.header}>
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon type="FontAwesome" name="arrow-left" />
-            </Button>
-          </Left>
-          <Body />
-          <Right />
-        </Header>
+    if (this.state.loading) {
+      return <Loader message={this.state.loadingMessage} />;
+    } else {
+      return (
+        <Container>
+          <Header style={styles.header}>
+            <Left>
+              <Button
+                transparent
+                onPress={() => this.props.navigation.goBack()}
+              >
+                <Icon type="FontAwesome" name="arrow-left" />
+              </Button>
+            </Left>
+            <Body />
+            <Right />
+          </Header>
 
-        <Content style={styles.content}>
-          <Card style={styles.assetCard}>
-            <CardItem>
-              <Text>Welcome {this.props.navigation.getParam("username")}</Text>
-            </CardItem>
-            <CardItem>
-              <Left>
-                <Text>Asset</Text>
-              </Left>
-              <Right>
-                <Text>Quantity</Text>
-              </Right>
-            </CardItem>
-            <CardItem>
-              <Left>
-                <Thumbnail
-                  style={styles.assetThumbnails}
-                  source={require("../assets/images/dai.png")}
-                />
-                <Text style={styles.walletAssetText}>Dai</Text>
-              </Left>
-              <Right>
-                <Text style={styles.assetQuantity}>
-                  {this.state.dai_balance || " Loading"}
+          <Content style={styles.content}>
+            <Card style={styles.assetCard}>
+              <CardItem>
+                <Text>
+                  Welcome {this.props.navigation.getParam("username")}
                 </Text>
-              </Right>
-            </CardItem>
-          </Card>
-          {
-            //this.props.navigation.getParam("pvt_key")
-          }
-          {this.state.value.map(item => {
-            return <Text key={Math.random()}> {item} </Text>;
-          })}
-        </Content>
-      </Container>
-    );
+              </CardItem>
+              <CardItem>
+                <Left>
+                  <Text>Asset</Text>
+                </Left>
+                <Right>
+                  <Text>Quantity</Text>
+                </Right>
+              </CardItem>
+              <CardItem>
+                <Left>
+                  <Thumbnail
+                    style={styles.assetThumbnails}
+                    source={require("../assets/images/dai.png")}
+                  />
+                  <Text style={styles.walletAssetText}>Dai</Text>
+                </Left>
+                <Right>
+                  <Text style={styles.assetQuantity}>
+                    {this.state.dai_balance || " Loading"}
+                  </Text>
+                </Right>
+              </CardItem>
+            </Card>
+            {
+              //this.props.navigation.getParam("pvt_key")
+            }
+            {this.state.value.map(item => {
+              return <Text key={Math.random()}> {item} </Text>;
+            })}
+          </Content>
+        </Container>
+      );
+    }
   }
 }
 export default Wallet;
